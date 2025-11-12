@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware'; // Import persist and createJSONStorage
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { evaluate } from 'mathjs';
 
 export type CalculatorInput = {
@@ -24,14 +24,14 @@ interface CalculatorState {
   setCalculator: (calculator: CalculatorDefinition) => void;
   updateInputValue: (inputId: string, value: string | number) => void;
   calculateOutput: () => void;
-  clearCalculator: () => void; // New action to clear the calculator
+  clearCalculator: () => void;
 }
 
 export const useCalculatorStore = create<CalculatorState>()(
   persist(
     (set, get) => ({
       currentCalculator: null,
-      setCalculator: (calculator) => set({ currentCalculator: calculator }),
+      setCalculator: (calculator) => set({ currentCalculator: { ...calculator, outputValue: 0 } }), // Ensure outputValue is reset
       updateInputValue: (inputId, value) => {
         set((state) => {
           if (!state.currentCalculator) return state;
@@ -84,11 +84,11 @@ export const useCalculatorStore = create<CalculatorState>()(
           }
         });
       },
-      clearCalculator: () => set({ currentCalculator: null }), // Implement clear action
+      clearCalculator: () => set({ currentCalculator: null }),
     }),
     {
-      name: 'calculator-storage', // unique name for local storage item
-      storage: createJSONStorage(() => localStorage), // Use localStorage
+      name: 'calculator-storage',
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

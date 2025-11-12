@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCalculatorStore, CalculatorDefinition } from '@/store/calculatorStore';
-import { showSuccess, showError } from '@/utils/toast';
+import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
+import { supabase } from '@/integrations/supabase/client'; // Import supabase client
 
 const CalculatorPrompt = () => {
   const [prompt, setPrompt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const setCalculator = useCalculatorStore((state) => state.setCalculator);
 
   const handleGenerate = async () => {
@@ -17,27 +19,33 @@ const CalculatorPrompt = () => {
       return;
     }
 
-    // This is a mock generation for now.
-    // In Level 2, this would involve an API call to OpenAI via your Supabase backend.
+    setIsLoading(true);
+    const loadingToastId = showLoading("Generating your calculator...");
+
     try {
-      const mockCalculator: CalculatorDefinition = {
-        id: 'mock-calc-1',
-        name: 'Simple Sum Calculator',
-        description: `This calculator adds two numbers. Generated from prompt: "${prompt}"`,
-        inputs: [
-          { id: 'num1', label: 'Number 1', type: 'number', value: 0 },
-          { id: 'num2', label: 'Number 2', type: 'number', value: 0 },
-        ],
-        formula: 'sum', // Placeholder for actual formula
-        outputLabel: 'Total Sum',
-        outputValue: 0,
+      const { data, error } = await supabase.functions.invoke('generate-calculator', {
+        body: { prompt },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const generatedCalculator: CalculatorDefinition = {
+        ...data,
+        id: data.id || `generated-${Date.now()}`, // Ensure an ID is present
+        outputValue: 0, // Reset output value for new calculators
       };
-      setCalculator(mockCalculator);
-      showSuccess("Mock calculator generated successfully!");
+      
+      setCalculator(generatedCalculator);
+      showSuccess("Calculator generated successfully!");
       setPrompt('');
-    } catch (error) {
-      console.error("Mock generation failed:", error);
-      showError("Failed to generate calculator. Please try again.");
+    } catch (error: any) {
+      console.error("Calculator generation failed:", error);
+      showError(`Failed to generate calculator: ${error.message || 'Unknown error'}`);
+    } finally {
+      dismissToast(loadingToastId);
+      setIsLoading(false);
     }
   };
 
@@ -53,9 +61,10 @@ const CalculatorPrompt = () => {
           onChange={(e) => setPrompt(e.target.value)}
           rows={4}
           className="resize-none"
+          disabled={isLoading}
         />
-        <Button onClick={handleGenerate} className="w-full">
-          Generate Calculator
+        <Button onClick={handleGenerate} className="w-full" disabled={isLoading}>
+          {isLoading ? "Generating..." : "Generate Calculator"}
         </Button>
       </CardContent>
     </Card>

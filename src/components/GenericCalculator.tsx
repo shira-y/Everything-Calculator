@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button'; // Import Button
+import { Copy } from 'lucide-react'; // Import Copy icon
+import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
 
 const GenericCalculator = () => {
   const { currentCalculator, updateInputValue, calculateOutput } = useCalculatorStore();
@@ -23,6 +26,18 @@ const GenericCalculator = () => {
   const handleInputChange = (inputId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     updateInputValue(inputId, currentCalculator.inputs.find(input => input.id === inputId)?.type === 'number' ? parseFloat(value) || 0 : value);
+  };
+
+  const handleCopyOutput = async () => {
+    if (currentCalculator?.outputValue) {
+      try {
+        await navigator.clipboard.writeText(String(currentCalculator.outputValue));
+        showSuccess("Output copied to clipboard!");
+      } catch (err) {
+        console.error("Failed to copy output:", err);
+        showError("Failed to copy output.");
+      }
+    }
   };
 
   return (
@@ -49,12 +64,17 @@ const GenericCalculator = () => {
         <Separator />
         <div className="space-y-2">
           <Label className="text-lg font-semibold">{currentCalculator.outputLabel}</Label>
-          <Input
-            type="text"
-            value={currentCalculator.outputValue}
-            readOnly
-            className="w-full bg-muted font-mono text-lg"
-          />
+          <div className="flex items-center space-x-2">
+            <Input
+              type="text"
+              value={currentCalculator.outputValue}
+              readOnly
+              className="flex-grow bg-muted font-mono text-lg"
+            />
+            <Button variant="outline" size="icon" onClick={handleCopyOutput} aria-label="Copy output">
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

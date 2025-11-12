@@ -21,16 +21,15 @@ serve(async (req) => {
       });
     }
 
-    // Fetch OpenAI API key from environment variables
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
-      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+      console.error('OPENAI_API_KEY environment variable is not set.');
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured on the server.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       });
     }
 
-    // Allow model to be configured via environment variable, default to gpt-4o
     const MODEL_NAME = Deno.env.get('MODEL_NAME') || 'gpt-4o';
 
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -40,7 +39,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: MODEL_NAME, // Use configurable model name
+        model: MODEL_NAME,
         messages: [
           {
             role: 'system',
@@ -102,23 +101,38 @@ serve(async (req) => {
     const openaiData = await openaiResponse.json();
 
     if (!openaiResponse.ok) {
-      console.error('OpenAI API error:', openaiData);
-      return new Response(JSON.stringify({ error: openaiData.error?.message || 'Failed to get response from OpenAI' }), {
+      console.error('OpenAI API error response:', openaiResponse.status, openaiData);
+      return new Response(JSON.stringify({ 
+        error: `OpenAI API returned an error: ${openaiData.error?.message || 'Unknown OpenAI error'}`,
+        details: openaiData 
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: openaiResponse.status,
       });
     }
 
-    const calculatorDefinition = JSON.parse(openaiData.choices[0].message.content);
+    let calculatorDefinition;
+    try {
+      calculatorDefinition = JSON.parse(openaiData.choices[0].message.content);
+    } catch (parseError) {
+      console.error('Failed to parse OpenAI response content as JSON:', parseError, openaiData.choices[0].message.content);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to parse calculator definition from OpenAI response.',
+        details: openaiData.choices[0].message.content 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      });
+    }
 
     return new Response(JSON.stringify(calculatorDefinition), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
 
-  } catch (error) {
-    console.error('Edge Function error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: any) {
+    console.error('Edge Function internal error:', error);
+    return new Response(JSON.stringify({ error: `Internal server error: ${error.message}` }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
     });

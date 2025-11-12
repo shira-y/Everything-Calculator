@@ -33,10 +33,11 @@ const CalculatorPrompt = () => {
       if (error) {
         let errorMessage = error.message;
         try {
+          // Attempt to parse the error message if it's a JSON string from the edge function
           const errorBody = JSON.parse(error.message);
           if (errorBody.error) {
             errorMessage = errorBody.error;
-            if (errorBody.details) {
+            if (errorBody.details) { // Include additional details if available
               errorMessage += ` Details: ${JSON.stringify(errorBody.details)}`;
             }
           }

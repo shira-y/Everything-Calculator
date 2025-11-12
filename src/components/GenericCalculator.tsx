@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button'; // Import Button
-import { Copy } from 'lucide-react'; // Import Copy icon
-import { showSuccess, showError } from '@/utils/toast'; // Import toast utilities
+import { Button } from '@/components/ui/button';
+import { Copy, XCircle } from 'lucide-react'; // Import XCircle icon
+import { showSuccess, showError } from '@/utils/toast';
 
 const GenericCalculator = () => {
-  const { currentCalculator, updateInputValue, calculateOutput } = useCalculatorStore();
+  const { currentCalculator, updateInputValue, calculateOutput, clearCalculator } = useCalculatorStore(); // Get clearCalculator
 
   if (!currentCalculator) {
     return (
@@ -42,9 +42,14 @@ const GenericCalculator = () => {
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">{currentCalculator.name}</CardTitle>
-        <CardDescription>{currentCalculator.description}</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div>
+          <CardTitle className="text-2xl font-bold">{currentCalculator.name}</CardTitle>
+          <CardDescription>{currentCalculator.description}</CardDescription>
+        </div>
+        <Button variant="ghost" size="icon" onClick={clearCalculator} aria-label="Clear calculator">
+          <XCircle className="h-5 w-5 text-muted-foreground hover:text-destructive" />
+        </Button>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

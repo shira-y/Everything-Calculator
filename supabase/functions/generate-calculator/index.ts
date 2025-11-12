@@ -30,6 +30,9 @@ serve(async (req) => {
       });
     }
 
+    // Allow model to be configured via environment variable, default to gpt-4o
+    const MODEL_NAME = Deno.env.get('MODEL_NAME') || 'gpt-4o';
+
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -37,7 +40,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo', // Or 'gpt-4o' for better results if available
+        model: MODEL_NAME, // Use configurable model name
         messages: [
           {
             role: 'system',

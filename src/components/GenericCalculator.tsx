@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Copy, XCircle } from 'lucide-react';
+import { Copy, XCircle } from 'lucide-react'; // Import XCircle icon
 import { showSuccess, showError } from '@/utils/toast';
 
 const GenericCalculator = () => {

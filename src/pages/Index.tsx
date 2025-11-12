@@ -1,9 +1,8 @@
 "use client";
 
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import CalculatorPrompt from "@/components/CalculatorPrompt";
 import GenericCalculator from "@/components/GenericCalculator";
-import CalculatorLibrary from "@/components/CalculatorLibrary"; // Import the new component
+import CalculatorViewSwitcher from "@/components/CalculatorViewSwitcher"; // Import the new switcher component
 import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
@@ -17,11 +16,9 @@ const Index = () => {
           Instantly generate any calculator with natural language, or use one from our library.
         </p>
 
-        <CalculatorPrompt />
+        <CalculatorViewSwitcher /> {/* Use the new switcher component here */}
         <Separator className="my-8" />
         <GenericCalculator />
-        <Separator className="my-8" />
-        <CalculatorLibrary /> {/* Include the CalculatorLibrary component */}
       </div>
       <MadeWithDyad />
     </div>

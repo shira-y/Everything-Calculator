@@ -58,22 +58,9 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
           }
         });
 
-        let result: number | string;
-        if (state.currentCalculator.formula === 'sum') {
-          const numbers = state.currentCalculator.inputs
-            .filter(input => input.type === 'number')
-            .map(input => parseFloat(input.value as string || '0'));
-          result = numbers.reduce((acc, num) => acc + num, 0);
-        } else if (state.currentCalculator.formula === 'product') {
-          const numbers = state.currentCalculator.inputs
-            .filter(input => input.type === 'number')
-            .map(input => parseFloat(input.value as string || '1'));
-          result = numbers.reduce((acc, num) => acc * num, 1);
-        } else {
-          // Use mathjs for general formula evaluation
-          result = evaluate(state.currentCalculator.formula, scope);
-        }
-
+        // Use mathjs for general formula evaluation for all calculators
+        let result: number | string = evaluate(state.currentCalculator.formula, scope);
+        
         // Ensure result is a number if it's a mathematical calculation
         if (typeof result === 'number') {
           result = parseFloat(result.toFixed(2)); // Round to 2 decimal places for display

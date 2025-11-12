@@ -9,7 +9,7 @@ export const predefinedCalculators: CalculatorDefinition[] = [
       { id: 'a', label: 'Number A', type: 'number', value: 0 },
       { id: 'b', label: 'Number B', type: 'number', value: 0 },
     ],
-    formula: 'sum', // This will be handled by our mock calculateOutput for now
+    formula: 'a + b', // Changed to mathjs-compatible formula
     outputLabel: 'Sum',
     outputValue: 0,
   },
@@ -21,7 +21,7 @@ export const predefinedCalculators: CalculatorDefinition[] = [
       { id: 'x', label: 'Factor X', type: 'number', value: 1 },
       { id: 'y', label: 'Factor Y', type: 'number', value: 1 },
     ],
-    formula: 'product', // This will be handled by our mock calculateOutput for now
+    formula: 'x * y', // Changed to mathjs-compatible formula
     outputLabel: 'Product',
     outputValue: 1,
   },
@@ -34,7 +34,7 @@ export const predefinedCalculators: CalculatorDefinition[] = [
       { id: 'rate', label: 'Annual Rate (%)', type: 'number', value: 5 },
       { id: 'time', label: 'Time (Years)', type: 'number', value: 1 },
     ],
-    formula: 'principal * (rate / 100) * time', // Placeholder for actual formula
+    formula: 'principal * (rate / 100) * time',
     outputLabel: 'Simple Interest',
     outputValue: 0,
   },
@@ -46,7 +46,7 @@ export const predefinedCalculators: CalculatorDefinition[] = [
       { id: 'weight', label: 'Weight (kg)', type: 'number', value: 70 },
       { id: 'height', label: 'Height (m)', type: 'number', value: 1.75 },
     ],
-    formula: 'weight / (height * height)', // Placeholder for actual formula
+    formula: 'weight / (height * height)',
     outputLabel: 'BMI',
     outputValue: 0,
   },

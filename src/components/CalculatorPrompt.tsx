@@ -7,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCalculatorStore, CalculatorDefinition } from '@/store/calculatorStore';
 import { showSuccess, showError, showLoading, dismissToast } from '@/utils/toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Save } from 'lucide-react'; // Import Save icon
-import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
+import { Save } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 const CalculatorPrompt = () => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { currentCalculator, setCalculator } = useCalculatorStore(); // Get currentCalculator from store
-  const queryClient = useQueryClient(); // Initialize query client
+  const { currentCalculator, setCalculator } = useCalculatorStore();
+  const queryClient = useQueryClient();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -31,13 +31,25 @@ const CalculatorPrompt = () => {
       });
 
       if (error) {
-        throw new Error(error.message);
+        let errorMessage = error.message;
+        try {
+          const errorBody = JSON.parse(error.message);
+          if (errorBody.error) {
+            errorMessage = errorBody.error;
+            if (errorBody.details) {
+              errorMessage += ` Details: ${JSON.stringify(errorBody.details)}`;
+            }
+          }
+        } catch (parseError) {
+          // If parsing fails, use the original message
+        }
+        throw new Error(errorMessage);
       }
 
       const generatedCalculator: CalculatorDefinition = {
         ...data,
-        id: data.id || `generated-${Date.now()}`, // Ensure an ID is present
-        outputValue: 0, // Reset output value for new calculators
+        id: data.id || `generated-${Date.now()}`,
+        outputValue: 0,
       };
       
       setCalculator(generatedCalculator);
@@ -72,7 +84,7 @@ const CalculatorPrompt = () => {
       }
 
       showSuccess(`"${currentCalculator.name}" saved to library!`);
-      queryClient.invalidateQueries({ queryKey: ['predefinedCalculators'] }); // Invalidate cache to refresh library
+      queryClient.invalidateQueries({ queryKey: ['predefinedCalculators'] });
     } catch (error: any) {
       console.error("Failed to save calculator:", error);
       showError(`Failed to save calculator: ${error.message || 'Unknown error'}`);
@@ -83,7 +95,7 @@ const CalculatorPrompt = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto border border-blue-200 dark:border-blue-700">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Generate Your Calculator</CardTitle>
       </CardHeader>

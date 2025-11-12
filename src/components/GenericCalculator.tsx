@@ -7,15 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Copy, XCircle } from 'lucide-react'; // Import XCircle icon
+import { Copy, XCircle } from 'lucide-react';
 import { showSuccess, showError } from '@/utils/toast';
 
 const GenericCalculator = () => {
-  const { currentCalculator, updateInputValue, calculateOutput, clearCalculator } = useCalculatorStore(); // Get clearCalculator
+  const { currentCalculator, updateInputValue, calculateOutput, clearCalculator } = useCalculatorStore();
 
   if (!currentCalculator) {
     return (
-      <Card className="w-full max-w-2xl mx-auto text-center py-8">
+      <Card className="w-full max-w-2xl mx-auto text-center py-8 border border-blue-200 dark:border-blue-700">
         <CardContent>
           <p className="text-muted-foreground">No calculator generated yet. Type a prompt above!</p>
         </CardContent>
@@ -41,7 +41,7 @@ const GenericCalculator = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto border border-blue-200 dark:border-blue-700">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
           <CardTitle className="text-2xl font-bold">{currentCalculator.name}</CardTitle>

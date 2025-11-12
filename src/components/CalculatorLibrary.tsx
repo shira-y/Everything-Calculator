@@ -3,10 +3,10 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useCalculatorStore } from '@/store/calculatorStore';
-import { fetchPredefinedCalculators } from '@/data/predefinedCalculators'; // Import the fetch function
+import { fetchPredefinedCalculators } from '@/data/predefinedCalculators';
 import { showSuccess, showError } from '@/utils/toast';
-import { useQuery } from '@tanstack/react-query'; // Import useQuery
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton for loading state
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const CalculatorLibrary = () => {
   const setCalculator = useCalculatorStore((state) => state.setCalculator);
@@ -19,18 +19,18 @@ const CalculatorLibrary = () => {
   const handleSelectCalculator = (calculatorId: string) => {
     const selectedCalculator = predefinedCalculators?.find(calc => calc.id === calculatorId);
     if (selectedCalculator) {
-      setCalculator({ ...selectedCalculator, outputValue: 0 }); // Reset output value when selecting
+      setCalculator({ ...selectedCalculator, outputValue: 0 });
       showSuccess(`Loaded "${selectedCalculator.name}" from the library.`);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-blue-200 dark:border-blue-700">
         <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-50 text-center">Ready-to-Use Calculators</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="h-[120px]">
+            <Card key={i} className="h-[120px] border border-blue-100 dark:border-blue-800">
               <CardHeader>
                 <Skeleton className="h-5 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-full" />
@@ -48,7 +48,7 @@ const CalculatorLibrary = () => {
   if (isError) {
     showError(`Failed to load calculators: ${error?.message || 'Unknown error'}`);
     return (
-      <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center text-destructive">
+      <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center text-destructive border border-red-300 dark:border-red-700">
         <h2 className="text-2xl font-bold mb-6">Error Loading Calculators</h2>
         <p>There was an error fetching the calculator library. Please try again later.</p>
       </div>
@@ -56,13 +56,13 @@ const CalculatorLibrary = () => {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="w-full max-w-4xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-blue-200 dark:border-blue-700">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-50 text-center">Ready-to-Use Calculators</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {predefinedCalculators?.map((calculator) => (
           <Card
             key={calculator.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow duration-200 ease-in-out"
+            className="cursor-pointer hover:shadow-lg transition-shadow duration-200 ease-in-out border border-blue-100 dark:border-blue-800"
             onClick={() => handleSelectCalculator(calculator.id)}
           >
             <CardHeader>

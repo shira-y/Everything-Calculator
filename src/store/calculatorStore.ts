@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { evaluate } from 'mathjs'; // Import evaluate from mathjs
 
 export type CalculatorInput = {
   id: string;
@@ -49,10 +50,15 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
       if (!state.currentCalculator) return state;
 
       try {
-        // This is a placeholder for actual formula evaluation.
-        // In a real scenario, you'd use a library like math.js or expr-eval.
-        // For now, we'll do a very simple mock calculation.
-        let result: number | string = 'Error';
+        const scope: { [key: string]: number | string } = {};
+        state.currentCalculator.inputs.forEach(input => {
+          // Only add number inputs to the scope for math evaluation
+          if (input.type === 'number') {
+            scope[input.id] = parseFloat(input.value as string || '0');
+          }
+        });
+
+        let result: number | string;
         if (state.currentCalculator.formula === 'sum') {
           const numbers = state.currentCalculator.inputs
             .filter(input => input.type === 'number')
@@ -64,8 +70,13 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
             .map(input => parseFloat(input.value as string || '1'));
           result = numbers.reduce((acc, num) => acc * num, 1);
         } else {
-          // Default to just showing input values concatenated or similar
-          result = state.currentCalculator.inputs.map(input => input.value).join(', ');
+          // Use mathjs for general formula evaluation
+          result = evaluate(state.currentCalculator.formula, scope);
+        }
+
+        // Ensure result is a number if it's a mathematical calculation
+        if (typeof result === 'number') {
+          result = parseFloat(result.toFixed(2)); // Round to 2 decimal places for display
         }
 
         return {

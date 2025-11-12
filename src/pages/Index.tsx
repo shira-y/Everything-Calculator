@@ -3,6 +3,7 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import CalculatorPrompt from "@/components/CalculatorPrompt";
 import GenericCalculator from "@/components/GenericCalculator";
+import CalculatorLibrary from "@/components/CalculatorLibrary"; // Import the new component
 import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
@@ -19,14 +20,8 @@ const Index = () => {
         <CalculatorPrompt />
         <Separator className="my-8" />
         <GenericCalculator />
-
-        {/* Placeholder for "Library of ready-to-use calculators" */}
-        <div className="w-full max-w-2xl mx-auto mt-12 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-50">Ready-to-Use Calculators (Coming Soon!)</h2>
-          <p className="text-gray-700 dark:text-gray-300">
-            This section will feature a library of pre-built calculators for common tasks.
-          </p>
-        </div>
+        <Separator className="my-8" />
+        <CalculatorLibrary /> {/* Include the CalculatorLibrary component */}
       </div>
       <MadeWithDyad />
     </div>

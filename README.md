@@ -64,22 +64,11 @@ Ensure your `src/integrations/supabase/client.ts` file is correctly configured w
 
 #### b. Database Schema
 
-Create the `calculators` table and `profiles` table (if user profiles are needed) in your Supabase project.
+The `calculators` table already exists in your Supabase project. Please ensure the following Row Level Security (RLS) policies are enabled for it:
 
-**`calculators` table:**
+**`calculators` table RLS policies:**
 
-<dyad-execute-sql description="Create calculators table with RLS">
--- Create calculators table
-CREATE TABLE public.calculators (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  inputs JSONB NOT NULL,
-  formula TEXT NOT NULL,
-  output_label TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
+<dyad-execute-sql description="Ensure RLS policies for calculators table">
 -- Enable RLS (REQUIRED)
 ALTER TABLE public.calculators ENABLE ROW LEVEL SECURITY;
 
@@ -95,6 +84,8 @@ FOR SELECT USING (true);
 -- CREATE POLICY "Users can delete their own calculators" ON public.calculators
 -- FOR DELETE TO authenticated USING (auth.uid() = user_id);
 </dyad-execute-sql>
+
+If user profiles are needed, create the `profiles` table and its RLS policies:
 
 **`profiles` table (if user profiles are needed):**
 

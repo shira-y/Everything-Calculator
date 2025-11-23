@@ -64,46 +64,25 @@ Ensure your `src/integrations/supabase/client.ts` file is correctly configured w
 
 #### b. Database Schema
 
-The `calculators` and `profiles` tables are expected to exist in your Supabase project. Please ensure the following Row Level Security (RLS) policies are enabled for them:
+The `calculators` and `profiles` tables are expected to exist in your Supabase project. Please ensure the following Row Level Security (RLS) policies are enabled and correctly configured for them:
 
 **`calculators` table RLS policies:**
 
-<dyad-execute-sql description="Ensure RLS policies for calculators table">
+<dyad-execute-sql description="Ensure RLS is enabled on the calculators table">
 -- Ensure RLS is enabled on the calculators table
 ALTER TABLE public.calculators ENABLE ROW LEVEL SECURITY;
-
--- Ensure the public read access policy for the library exists
-CREATE POLICY IF NOT EXISTS "Public read access to calculators" ON public.calculators
-FOR SELECT USING (true);
-
--- If you want authenticated users to manage their own calculators, ensure these policies exist:
--- CREATE POLICY IF NOT EXISTS "Users can insert their own calculators" ON public.calculators
--- FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id); -- assuming a user_id column
--- CREATE POLICY IF NOT EXISTS "Users can update their own calculators" ON public.calculators
--- FOR UPDATE TO authenticated USING (auth.uid() = user_id);
--- CREATE POLICY IF NOT EXISTS "Users can delete their own calculators" ON public.calculators
--- FOR DELETE TO authenticated USING (auth.uid() = user_id);
 </dyad-execute-sql>
+
+You should have a policy named `"Public read access to calculators"` for `SELECT` operations on `public.calculators` using `true`. If you intend for authenticated users to manage their own calculators, ensure policies for `INSERT`, `UPDATE`, and `DELETE` are also in place, typically checking `auth.uid() = user_id`.
 
 **`profiles` table RLS policies:**
 
-<dyad-execute-sql description="Ensure RLS policies for profiles table">
+<dyad-execute-sql description="Ensure RLS is enabled on the profiles table">
 -- Ensure RLS is enabled on the profiles table
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
--- Ensure secure policies for each operation exist for the profiles table
-CREATE POLICY IF NOT EXISTS "profiles_select_policy" ON public.profiles
-FOR SELECT TO authenticated USING (auth.uid() = id);
-
-CREATE POLICY IF NOT EXISTS "profiles_insert_policy" ON public.profiles
-FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
-
-CREATE POLICY IF NOT EXISTS "profiles_update_policy" ON public.profiles
-FOR UPDATE TO authenticated USING (auth.uid() = id);
-
-CREATE POLICY IF NOT EXISTS "profiles_delete_policy" ON public.profiles
-FOR DELETE TO authenticated USING (auth.uid() = id);
 </dyad-execute-sql>
+
+You should have policies named `"profiles_select_policy"`, `"profiles_insert_policy"`, `"profiles_update_policy"`, and `"profiles_delete_policy"` for `SELECT`, `INSERT`, `UPDATE`, and `DELETE` operations respectively, ensuring users can only access their own profile data (e.g., `auth.uid() = id`).
 
 #### c. Edge Function Deployment
 

@@ -64,56 +64,44 @@ Ensure your `src/integrations/supabase/client.ts` file is correctly configured w
 
 #### b. Database Schema
 
-The `calculators` table already exists in your Supabase project. Please ensure the following Row Level Security (RLS) policies are enabled for it:
+The `calculators` and `profiles` tables are expected to exist in your Supabase project. Please ensure the following Row Level Security (RLS) policies are enabled for them:
 
 **`calculators` table RLS policies:**
 
 <dyad-execute-sql description="Ensure RLS policies for calculators table">
--- Enable RLS (REQUIRED)
+-- Ensure RLS is enabled on the calculators table
 ALTER TABLE public.calculators ENABLE ROW LEVEL SECURITY;
 
--- Policies for public read access (for the library)
-CREATE POLICY "Public read access to calculators" ON public.calculators
+-- Ensure the public read access policy for the library exists
+CREATE POLICY IF NOT EXISTS "Public read access to calculators" ON public.calculators
 FOR SELECT USING (true);
 
--- If you want authenticated users to manage their own calculators, add these:
--- CREATE POLICY "Users can insert their own calculators" ON public.calculators
+-- If you want authenticated users to manage their own calculators, ensure these policies exist:
+-- CREATE POLICY IF NOT EXISTS "Users can insert their own calculators" ON public.calculators
 -- FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id); -- assuming a user_id column
--- CREATE POLICY "Users can update their own calculators" ON public.calculators
+-- CREATE POLICY IF NOT EXISTS "Users can update their own calculators" ON public.calculators
 -- FOR UPDATE TO authenticated USING (auth.uid() = user_id);
--- CREATE POLICY "Users can delete their own calculators" ON public.calculators
+-- CREATE POLICY IF NOT EXISTS "Users can delete their own calculators" ON public.calculators
 -- FOR DELETE TO authenticated USING (auth.uid() = user_id);
 </dyad-execute-sql>
 
-If user profiles are needed, create the `profiles` table and its RLS policies:
+**`profiles` table RLS policies:**
 
-**`profiles` table (if user profiles are needed):**
-
-<dyad-execute-sql description="Create profiles table with RLS">
--- Create profiles table
-CREATE TABLE public.profiles (
-  id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  first_name TEXT,
-  last_name TEXT,
-  avatar_url TEXT,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  PRIMARY KEY (id)
-);
-
--- Enable RLS (REQUIRED for security)
+<dyad-execute-sql description="Ensure RLS policies for profiles table">
+-- Ensure RLS is enabled on the profiles table
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Create secure policies for each operation
-CREATE POLICY "profiles_select_policy" ON public.profiles
+-- Ensure secure policies for each operation exist for the profiles table
+CREATE POLICY IF NOT EXISTS "profiles_select_policy" ON public.profiles
 FOR SELECT TO authenticated USING (auth.uid() = id);
 
-CREATE POLICY "profiles_insert_policy" ON public.profiles
+CREATE POLICY IF NOT EXISTS "profiles_insert_policy" ON public.profiles
 FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 
-CREATE POLICY "profiles_update_policy" ON public.profiles
+CREATE POLICY IF NOT EXISTS "profiles_update_policy" ON public.profiles
 FOR UPDATE TO authenticated USING (auth.uid() = id);
 
-CREATE POLICY "profiles_delete_policy" ON public.profiles
+CREATE POLICY IF NOT EXISTS "profiles_delete_policy" ON public.profiles
 FOR DELETE TO authenticated USING (auth.uid() = id);
 </dyad-execute-sql>
 
